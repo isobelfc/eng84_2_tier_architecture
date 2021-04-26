@@ -73,3 +73,32 @@ sudo echo "server {
 ```
 - restart nginx with `sudo systemctl restart nginx`
 - the app pages can now be accessed without including the port
+
+## Third Iteration
+- create an ec2 instance for db
+- install mongodb with required dependencies
+- allow access only from the app instance
+- connect the app with db to fetch the data
+- app to work with reverse proxy without 3000 port, fibonacci, posts
+
+### Process
+- create db instance the same as for the app instance above
+- however, security group rules should allow SSH from `My IP`, and allow port 27017 from the private IP of the app instance
+- SSH into the instance, and run update and upgrade
+- to connect to the MongoDB database, run:
+```
+wget -qO - https://www.mongodb.org/static/pgp/server-3.2.asc | sudo apt-key add -
+echo "deb http://repo.mongodb.org/apt/ubuntu xenial/mongodb-org/3.2 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-3.2.list
+sudo apt-get update
+sudo apt-get install -y mongodb-org=3.2.20 mongodb-org-server=3.2.20 mongodb-org-shell=3.2.20 mongodb-org-mongos=3.2.20 mongodb-org-tools=3.2.20
+
+sudo mkdir -p /data/db
+sudo chown -R mongodb:mongodb /var/lib/mongodb
+sudo sed -i 's/127.0.0.1/0.0.0.0/g' /etc/mongod.conf
+sudo systemctl enable mongod
+sudo service mongod start
+```
+- connect the app with the db by creating an environment variable
+- in the app instance, run `sudo echo "export DB_HOST=mongodb://db_private_ip:27017/posts" >> ~/.bashrc`
+- the two instances are now connected, and you can run `seed.js` to seed the database for post
+- then use `node app.js` to run the app and access fibonacci and posts pages

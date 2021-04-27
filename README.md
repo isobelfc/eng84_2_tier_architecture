@@ -100,5 +100,45 @@ sudo service mongod start
 ```
 - connect the app with the db by creating an environment variable
 - in the app instance, run `sudo echo "export DB_HOST=mongodb://db_private_ip:27017/posts" >> ~/.bashrc`
+- then source the bashrc file with `source ~/.bashrc`
 - the two instances are now connected, and you can run `seed.js` to seed the database for post
 - then use `node app.js` to run the app and access fibonacci and posts pages
+
+## VPCs
+- Virtual Private Cloud
+- gives ability to define and control virtual network
+- enables you to launch AWS resources into a virtual network that you've defined
+- this virtual network closely resembles a traditional network that you'd operate in your data centre
+- allows EC2 instances to communicate with eah other, we can also create multiple subnets within our VPC
+- benefits us with scalability of infrastructure of AWS
+
+## Internet gateway
+- the point which allows us to connect to the Internet
+- a gateway that you attach to your VPC to enable communication between resources in your VPC and the internet
+
+## Subnets
+- network inside a VPC
+- make networking more efficient
+- a range of IP addresses in your VPC
+- a subnet could have multiple EC2 instances
+
+## Route Tables
+- set of rules, called routes
+- used to determine where external network traffic is directed
+
+## NACLs
+- NACLs are an added layer of defence
+- they work at the subnet level
+- stateless - you have to have rules to allow the request to come in and to allow the response to go back out
+
+## Security Group
+- works as a firewall on the instance level
+- they are attached to the VPC and subnet
+- they have inbound and outbound traffic rules defined
+- stateful - if you allowed inbound rule that will automatically be allowed outbound, even if unspecified
+
+## Ephemeral Ports
+- short-lived ports
+- automatically allocated based on the demand
+- allows outbound responses to clients on the internet
+- ports 1024-65535

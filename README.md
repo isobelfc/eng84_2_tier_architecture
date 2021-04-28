@@ -190,7 +190,7 @@ sudo service mongod start
 - save an image of the instance
 - we can then create another instance from the image
     
-![2 tier architecture diagram](2 tier architecture diagram.png)
+![2 tier architecture diagram](2_tier_architecture_diagram.png)
 
 ## Task iteration
 - create new instances within the new VPC from the images

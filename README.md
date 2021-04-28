@@ -142,3 +142,109 @@ sudo service mongod start
 - automatically allocated based on the demand
 - allows outbound responses to clients on the internet
 - ports 1024-65535
+
+## Set up
+### VPC
+- give name
+- IPv4
+- create
+
+### Internet Gateway
+- name
+- create
+- attach to VPC
+
+### Subnet
+- select VPC
+- name
+- AZ
+- IPv4
+- create
+
+### Route Table
+- connect VPC
+- name
+
+### Security Groups
+- app
+    - inbound allow port 80 to all
+    - inbound allow port 22 for ssh to My IP
+    - outbound rules allow all
+- db
+    - inbound allow all traffic from app security group
+    - inbound allow ssh from My IP
+    - outbound rules allow all
+    
+### NACL - Public
+- inbound rules
+    - 100 allows HTTP 80 traffic from any IPv4 address
+    - 110 allows SSH 22 traffic from your network over the internet
+    - 120 allows return traffic from hosts on the internet that are responding to requests originating in the subnet - TCP 1024-65535
+
+- outbound rules
+    - 100 to allow port 80
+    - 110 we need the CIDR block and allow 27017 for outbound access to our MongoDB server in private subnet
+    - 120 to allow short-lived ports between 1024-65535
+
+### AMIs
+- save an image of the instance
+- we can then create another instance from the image
+    
+## Task iteration
+- create new instances within the new VPC from the images
+- first create them within the default subnet and check `/posts` works
+- then create within the new subnets
+
+### Bastion Task
+- What is a Bastion Server (Jump Box)
+- benefits and use case
+- Create a new public subnet called bastion
+- Create a new ubuntu instance called bastion in this subnet
+- Create a security group that only allows access on port 22 from your IP
+- Create a security group called bastion-access that only allows ssh access from the bastion group
+- SSH to your bastion server and from there SSH to your database instance
+
+### About bastion
+- the private subnet does not have internet access, so we can't SSH into it any more
+- a bastion host makes sure that that only authorised people can access
+- the bastion server is accessed normally via SSH
+- the security groups of the private instance need to specify SSH access from the private IPv4 of the bastion server only
+- the private instance can then be connected to from inside the bastion server by using an SSH command without a key
+- it can also be accessed by setting up a config file within the bastion server
+- a single command can be used to log into the private instance immediately by using the `-j` argument
+- e.g. `ssh -i DevOpsStudent.pem -J ubuntu@ec2-bastion_public_ip.eu-east-2.compute.amazonaws.com ubuntu@private_ip.eu-east-2.compute.internal`
+
+![bastion diagram](https://miro.medium.com/max/851/1*NF_mm0npdG7yJLcCC2m4Xw.png)
+
+### Process
+- create a new public subnet in your VPC called `bastion`
+- under `Route Tables`, create a subnet association with the bastion subnet
+- add a new route with destination `0.0.0.0/0` and a target of your internet gateway
+- create a new instance on the bastion subnet, called `bastion`
+- set the security group inbound rules to allow SSH from `My IP`, and outbound rules to allow all traffic
+- once the instance is created, add an inbound rule on the security group of the app and db instances to allow SSH from the private IP of the bastion instance or the bastion security group
+- in the bash terminal, create a file called `config` in the `.ssh` folder
+- in this file, write the following:
+```
+Host bastion
+  Hostname bastion_public_ip
+  user ubuntu
+  IdentityFile ~/.ssh/DevOpsStudent.pem
+  ForwardAgent yes
+```
+- note: this file will need updated every time the public IP changes
+- close the bash terminal, and reopen it
+- SSH into the bastion instance using the command `ssh bastion`
+- create a `.ssh` folder and create a file called `config` inside it
+- in the `config` file, write:
+```
+Host db
+  Hostname db_private_ip
+  user ubuntu
+  Port 22
+Host app
+  Hostname app_private_ip
+  user ubuntu
+  Port 22
+```
+- you can now SSH into these instances using `ssh app` or `ssh db`

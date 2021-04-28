@@ -212,7 +212,7 @@ sudo service mongod start
 - the private instance can then be connected to from inside the bastion server by using an SSH command without a key
 - it can also be accessed by setting up a config file within the bastion server
 - a single command can be used to log into the private instance immediately by using the `-j` argument
-- e.g. `ssh -i DevOpsStudent.pem -J ubuntu@ec2-bastion_public_ip.eu-east-2.compute.amazonaws.com ubuntu@private_ip.eu-east-2.compute.internal`
+- e.g. `ssh -i DevOpsStudent.pem -J ubuntu@ec2-bastion_public_ip.eu-west-1.compute.amazonaws.com ubuntu@private_ip.eu-west-1.compute.internal`
 
 ![bastion diagram](https://miro.medium.com/max/851/1*NF_mm0npdG7yJLcCC2m4Xw.png)
 

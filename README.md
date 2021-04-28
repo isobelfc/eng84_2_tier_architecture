@@ -109,7 +109,7 @@ sudo service mongod start
 - gives ability to define and control virtual network
 - enables you to launch AWS resources into a virtual network that you've defined
 - this virtual network closely resembles a traditional network that you'd operate in your data centre
-- allows EC2 instances to communicate with eah other, we can also create multiple subnets within our VPC
+- allows EC2 instances to communicate with each other, we can also create multiple subnets within our VPC
 - benefits us with scalability of infrastructure of AWS
 
 ## Internet gateway
@@ -190,6 +190,8 @@ sudo service mongod start
 - save an image of the instance
 - we can then create another instance from the image
     
+![2 tier architecture diagram](2 tier architecture diagram.png)
+
 ## Task iteration
 - create new instances within the new VPC from the images
 - first create them within the default subnet and check `/posts` works
@@ -248,3 +250,30 @@ Host app
   Port 22
 ```
 - you can now SSH into these instances using `ssh app` or `ssh db`
+
+## S3
+- Simple Storage Service provided by AWS
+- store data in buckets and retrieve at any time
+- we can also host our static website on S3
+- prerequisites
+  - running EC2
+  - AWS access
+  - secret key
+- in order to have AWSCLI we need to install the required dependencies
+  - python `sudo apt-get install python`
+  - pip
+  - `sudo apt-get install awscli`
+- configure the AWSCLI with AWS keys (in excel file) to authenticate the access from our machine to S3 `aws configure`
+- `aws s3 ls` to see all buckets
+- `aws s3 mb s3://eng84isobels3` to make a bucket
+  - bucket name cannot contain symbols or capitals
+- create a file in localhost `sudo nano README.md`
+- `aws s3 cp README.md s3://eng84isobels3` to copy into bucket
+- we can then see it on the website dash
+- we can change permissions from the dash
+- `aws s3 sync s3://eng84isobels3 README.md
+` to download file
+- `aws s3 rm s3://eng84isobels3/README.md` to remove file
+- `aws s3 rb s3://eng84isobels3` to remove bucket
+  - bucket needs to be empty
+- most linux commands work
